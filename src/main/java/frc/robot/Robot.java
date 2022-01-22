@@ -4,65 +4,68 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-//import edu.wpi.first.wpilibj.motorcontrol.CANSparkMax;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-/**
- * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
- * the code necessary to operate a robot with tank drive.
- */
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 public class Robot extends TimedRobot {
-  private DifferentialDrive m_myRobot;
+
+  private DifferentialDrive drive;
   private Joystick stick;
-  private Joystick stick2;
-  private XboxController c;
- // private Joystick m_rightStick;
 
-  private final CANSparkMax m_leftMotor1 = new CANSparkMax(0, MotorType.kBrushed);
-  private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushed);
-
-  MotorControllerGroup m_left = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
-
-  private final CANSparkMax m_rightMotor1 = new CANSparkMax(3, MotorType.kBrushed);
-  private final CANSparkMax m_rightMotor2 = new CANSparkMax(1, MotorType.kBrushed);
-
-  MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
+  private final Side left = new Side(0, false);
+  private final Side right = new Side(1, true);
+  private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushed);
+  private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushed);
 
   @Override
   public void robotInit() {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-   
-    m_right.setInverted(true);
-   
-    m_myRobot = new DifferentialDrive(m_left, m_right);
+    drive = new DifferentialDrive(left.group, right.group);
     stick = new Joystick(0);
-    //stick2 = new Joystick(1);
-    //c = new XboxController(0);
-  
-    //m_rightStick = new Joystick(1);
   }
 
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
-  // m_left.set(stick.getY() + stick.getX());
-   //m_left.set(stick.getY() + stick.getX());
-   //m_right.set(stick.getY() - stick.getX());
-    //SmartDashboard.putNumber("X", stick.getX());
-    //SmartDashboard.putNumber("Y", stick.getY());
-   //m_myRobot.tankDrive(stick.getY(), stick.get(Z));
-    //m_myRobot.tankDrive(c.getY(), c.getX());
+    drive.arcadeDrive(-stick.getX(), stick.getY());
+    this.updateIntake();
+    this.updateShooter();
   }
 
- // public void auto
+  private void updateIntake() {
+    if (stick.getRawButtonPressed(Buttons.DPAD_UP)) {
+      intake.set(-1.0);
+    } else if (stick.getRawButtonReleased(Buttons.DPAD_UP)) {
+      intake.set(0.0);
+    } else if (stick.getRawButtonPressed(Buttons.DPAD_DOWN)) {
+      intake.set(1.0);
+    } else if (stick.getRawButtonReleased(Buttons.DPAD_DOWN)) {
+      intake.set(0.0);
+    }
+  }
+
+  private void updateShooter() {
+    if (stick.getTriggerPressed()) {
+      this.shooter.set(1.0);
+    } else if (stick.getTriggerReleased()) {
+      this.shooter.set(0.0);
+    }
+  }
+
+  @Override
+  public void autonomousInit() {
+    drive.arcadeDrive(10, 0);
+    try {
+      wait(2);
+      drive.arcadeDrive(0, 0);
+      drive.arcadeDrive(0, 180);
+      drive.arcadeDrive(10, 0);
+      drive.arcadeDrive(0, 0);
+    } catch (InterruptedException e) {
+      drive.stopMotor();
+    }
+  }
+
 }
