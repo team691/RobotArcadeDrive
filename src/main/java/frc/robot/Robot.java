@@ -143,19 +143,21 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
-    if(stick.getRawButtonPressed(2) == true){
-      m_intake.set(-1.0);
+    //m_intake.set(stick.getZ());
+   
+     if(stick.getRawButtonPressed(2) == true){
+      m_intake.set(-.5);
     }
     else if(stick.getRawButtonReleased(2) == true){
       m_intake.set(0);
     }
   if(stick.getRawButtonPressed(3) == true){
-    m_intake.set(1.0);
+    m_intake.set(.5);
   } else if(stick.getRawButtonReleased(3) == true){
     m_intake.set(0.0);
   }
   if(stick.getTriggerPressed() == true){
-    m_shoot.set(1.0);
+    m_shoot.set(.5);
   } else if(stick.getTriggerReleased() == true){
     m_shoot.set(0.0);
   }
