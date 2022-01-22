@@ -30,14 +30,18 @@ public class Robot extends TimedRobot {
  // private Joystick m_rightStick;
 
   private final CANSparkMax m_leftMotor1 = new CANSparkMax(3, MotorType.kBrushed);
-  private final CANSparkMax m_leftMotor2 = new CANSparkMax(4, MotorType.kBrushed);
+  private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushed);
 
   MotorControllerGroup m_left = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
   private final CANSparkMax m_rightMotor1 = new CANSparkMax(1, MotorType.kBrushed);
-  private final CANSparkMax m_rightMotor2 = new CANSparkMax(2, MotorType.kBrushed);
+  private final CANSparkMax m_rightMotor2 = new CANSparkMax(4, MotorType.kBrushed);
 
   MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
+
+
+  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
   Timer m_timer = new Timer();
   @Override
@@ -89,34 +93,77 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     // TODO Auto-generated method stub
     super.autonomousPeriodic();
-    if(m_timer.get() < 10.0){
-      //m_myRobot.arcadeDrive(0.5, 0.0);
-     //goForward();
-     m_left.set(0.25);
-     m_right.set(-0.25);
+  
+     
+    // goBackward();
+    if(m_timer.get() < 1){
+    turnLeft();
+    }
+  
+    //turnLeft(45);
+   // turnLeft(45);
+    
+    /*else if(m_timer.get() < 11 && m_timer.get() >= 10){
+      turnRight();
+     }
+
+    else if(m_timer.get() < 21.0 && m_timer.get() >= 11){
+      
+     goForwad();
+  
      
     }
-    //m_left.set(-0.1);
-    //m_right.set(0.1);
+    else if(m_timer.get() < 21.5 && m_timer.get() >= 21){
+      turnLeft();
+     }
+    */
    
-    else{
+   else{
       m_myRobot.stopMotor();
-      
-    }
   }
+}
   public void goForwad(){
-    m_left.set(0.1);
-    m_right.set(-0.1);
+    m_left.set(0.5);
+    m_right.set(-0.5);
   }
 
+  public void goBackward(){
+    m_left.set(-0.5);
+    m_right.set(0.5);
+  }
+  public void turnLeft(){
+    m_left.set(0.5);
+    m_right.set(0.5);
+  
+}
+  public void turnRight(){ 
+    m_left.set(-0.5);
+    m_right.set(-0.5);
+  }
   @Override
   public void teleopPeriodic() {
     m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
-  
+    if(stick.getRawButtonPressed(2) == true){
+      m_intake.set(-1.0);
+    }
+    else if(stick.getRawButtonReleased(2) == true){
+      m_intake.set(0);
+    }
+  if(stick.getRawButtonPressed(3) == true){
+    m_intake.set(1.0);
+  } else if(stick.getRawButtonReleased(3) == true){
+    m_intake.set(0.0);
+  }
+  if(stick.getTriggerPressed() == true){
+    m_shoot.set(1.0);
+  } else if(stick.getTriggerReleased() == true){
+    m_shoot.set(0.0);
+  }
+    //neoTest.set(.5);
   
      //m_left.set(stick.getY() + stick.getX());
-   //m_left.set(stick.getY() + stick.getX());
-   //m_right.set(stick.getY() - stick.getX());
+ // m_left.set(stick.getY() + stick.getX());
+  // m_right.set(stick.getY() - stick.getX());
     //SmartDashboard.putNumber("X", stick.getX());
     //SmartDashboard.putNumber("Y", stick.getY());
    //m_myRobot.tankDrive(stick.getY(), stick.get(Z));
