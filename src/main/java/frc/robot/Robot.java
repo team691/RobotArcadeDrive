@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    drive = new DifferentialDrive(left.group, right.group);
+    drive = new DifferentialDrive(left, right);
     stick = new Joystick(0);
   }
 
