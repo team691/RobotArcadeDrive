@@ -19,8 +19,8 @@ public class Robot extends TimedRobot {
 
   private final Side left = new Side(new int[] { 2, 3 }, false);
   private final Side right = new Side(new int[] { 1, 4 }, true);
-  private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushed);
-  private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushed);
+  private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushless);
 
   private final Timer timer = new Timer();
 
@@ -71,13 +71,13 @@ public class Robot extends TimedRobot {
   }
 
   private void updateIntake() {
-    if (stick.getRawButtonPressed(Buttons.DPAD_UP)) {
-      intake.set(-1.0);
-    } else if (stick.getRawButtonReleased(Buttons.DPAD_UP)) {
-      intake.set(0.0);
-    } else if (stick.getRawButtonPressed(Buttons.DPAD_DOWN)) {
-      intake.set(1.0);
-    } else if (stick.getRawButtonReleased(Buttons.DPAD_DOWN)) {
+    // double speed = (this.stick.getZ() / 2.0 + 1.0) / 2.0;
+    double speed = 0.25;
+    if (stick.getRawButton(Buttons.DPAD_DOWN)) {
+      intake.set(speed);
+    } else if (stick.getRawButton(Buttons.DPAD_UP)) {
+      intake.set(-speed);
+    } else if (stick.getRawButtonReleased(Buttons.DPAD_UP) || stick.getRawButtonReleased(Buttons.DPAD_DOWN)) {
       intake.set(0.0);
     }
   }
