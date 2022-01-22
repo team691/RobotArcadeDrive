@@ -7,6 +7,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,21 +15,19 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Robot extends TimedRobot {
 
-  private DifferentialDrive drive;
-  private Joystick stick;
-
+  /// Motors
   private final Side left = new Side(new int[] { 2, 3 }, false);
   private final Side right = new Side(new int[] { 1, 4 }, true);
   private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushless);
   private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushless);
 
-  private final Timer timer = new Timer();
+  private final DifferentialDrive drive = new DifferentialDrive(left, right);
 
-  @Override
-  public void robotInit() {
-    drive = new DifferentialDrive(left, right);
-    stick = new Joystick(0);
-  }
+  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
+  private final Timer timer = new Timer();
+  
+  private final Joystick stick = new Joystick(0);
 
   @Override
   public void autonomousPeriodic() {
@@ -66,12 +65,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     drive.arcadeDrive(-stick.getX(), stick.getY());
-    this.updateIntake();
-    this.updateShooter();
+    double speed = (-this.stick.getZ() + 1.0) / 4.0;
+    this.updateIntake(speed);
+    this.updateShooter(speed);
   }
 
-  private void updateIntake() {
-    double speed = (-this.stick.getZ() + 1.0) / 4.0;
+  private void updateIntake(double speed) {
     // double speed = 0.25;
     if (stick.getRawButton(Buttons.DPAD_DOWN)) {
       intake.set(speed);
@@ -82,9 +81,9 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void updateShooter() {
-    if (stick.getTriggerPressed()) {
-      this.shooter.set(1.0);
+  private void updateShooter(double speed) {
+    if (stick.getTrigger()) {
+      this.shooter.set(speed);
     } else if (stick.getTriggerReleased()) {
       this.shooter.set(0.0);
     }
