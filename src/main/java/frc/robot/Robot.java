@@ -71,8 +71,8 @@ public class Robot extends TimedRobot {
   }
 
   private void updateIntake() {
-    // double speed = (this.stick.getZ() / 2.0 + 1.0) / 2.0;
-    double speed = 0.25;
+    double speed = (-this.stick.getZ() + 1.0) / 4.0;
+    // double speed = 0.25;
     if (stick.getRawButton(Buttons.DPAD_DOWN)) {
       intake.set(speed);
     } else if (stick.getRawButton(Buttons.DPAD_UP)) {
