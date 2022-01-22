@@ -8,10 +8,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.joystick.JoystickType;
 
 public class Robot extends TimedRobot {
 
@@ -27,7 +27,15 @@ public class Robot extends TimedRobot {
 
   private final Timer timer = new Timer();
   
-  private final Joystick stick = new Joystick(0);
+  private final JoystickType stick0 = JoystickType.identify(0);
+  private final JoystickType stick1 = JoystickType.identify(1);
+
+  @Override
+  public void robotInit() {
+    super.robotInit();
+    // SmartDashboard.putString("Joystick 0", stick0.getName());
+    // SmartDashboard.putString("Joystick 1", stick1.getName());
+  }
 
   @Override
   public void autonomousPeriodic() {
@@ -64,27 +72,27 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive(-stick.getX(), stick.getY());
-    double speed = (-this.stick.getZ() + 1.0) / 4.0;
+    drive.tankDrive(-stick0.getX(), stick0.getY());
+    double speed = this.stick1.getSpeed();
     this.updateIntake(speed);
     this.updateShooter(speed);
   }
 
   private void updateIntake(double speed) {
     // double speed = 0.25;
-    if (stick.getRawButton(Buttons.DPAD_DOWN)) {
+    if (stick1.getIntakeDown()) {
       intake.set(speed);
-    } else if (stick.getRawButton(Buttons.DPAD_UP)) {
+    } else if (stick1.getIntakeUp()) {
       intake.set(-speed);
-    } else if (stick.getRawButtonReleased(Buttons.DPAD_UP) || stick.getRawButtonReleased(Buttons.DPAD_DOWN)) {
+    } else {
       intake.set(0.0);
     }
   }
 
   private void updateShooter(double speed) {
-    if (stick.getTrigger()) {
+    if (stick1.getTrigger()) {
       this.shooter.set(speed);
-    } else if (stick.getTriggerReleased()) {
+    } else if (stick1.getTriggerReleased()) {
       this.shooter.set(0.0);
     }
   }
@@ -93,13 +101,13 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     timer.reset();
     timer.start();
-    drive.arcadeDrive(10, 0);
+    drive.tankDrive(10, 0);
     try {
       wait(2);
-      drive.arcadeDrive(0, 0);
-      drive.arcadeDrive(0, 180);
-      drive.arcadeDrive(10, 0);
-      drive.arcadeDrive(0, 0);
+      drive.tankDrive(0, 0);
+      drive.tankDrive(0, 180);
+      drive.tankDrive(10, 0);
+      drive.tankDrive(0, 0);
     } catch (InterruptedException e) {
       drive.stopMotor();
     }
