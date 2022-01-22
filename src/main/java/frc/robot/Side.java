@@ -6,16 +6,14 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 public class Side {
-    
-    public static final int COUNT = 2;
 
     public final CANSparkMax[] motors;
     public final MotorControllerGroup group;
 
-    public Side(int offset, boolean inverted) {
-        this.motors = new CANSparkMax[COUNT];
+    public Side(int[] ids, boolean inverted) {
+        this.motors = new CANSparkMax[ids.length];
         for (int i = 0; i < this.motors.length; i++) {
-            this.motors[i] = new CANSparkMax(1 + i * 2 + offset, MotorType.kBrushed);
+            this.motors[i] = new CANSparkMax(ids[i], MotorType.kBrushed);
         }
         this.group = new MotorControllerGroup(this.motors);
         this.group.setInverted(inverted);

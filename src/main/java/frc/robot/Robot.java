@@ -17,8 +17,8 @@ public class Robot extends TimedRobot {
   private DifferentialDrive drive;
   private Joystick stick;
 
-  private final Side left = new Side(0, false);
-  private final Side right = new Side(1, true);
+  private final Side left = new Side(new int[] { 2, 3 }, false);
+  private final Side right = new Side(new int[] { 1, 4 }, true);
   private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushed);
   private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushed);
 
@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     // goBackward();
     if (timer.get() < 1) {
       turnLeft(0.5);
-    }else {
+    } else {
       drive.stopMotor();
     }
 
