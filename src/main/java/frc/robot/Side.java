@@ -21,4 +21,8 @@ public class Side {
         this.group.setInverted(inverted);
     }
 
+    public void set(double speed) {
+        this.group.set(speed);
+    }
+
 }

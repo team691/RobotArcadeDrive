@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class Robot extends TimedRobot {
@@ -21,10 +22,45 @@ public class Robot extends TimedRobot {
   private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushed);
   private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushed);
 
+  private final Timer timer = new Timer();
+
   @Override
   public void robotInit() {
     drive = new DifferentialDrive(left.group, right.group);
     stick = new Joystick(0);
+  }
+
+  @Override
+  public void autonomousPeriodic() {
+    super.autonomousPeriodic();
+
+    // goBackward();
+    if (timer.get() < 1) {
+      turnLeft(0.5);
+    }else {
+      drive.stopMotor();
+    }
+
+  }
+
+  public void goForward(double speed) {
+    left.set(speed);
+    right.set(-speed);
+  }
+
+  public void goBackward(double speed) {
+    left.set(-speed);
+    right.set(speed);
+  }
+
+  public void turnLeft(double speed) {
+    left.set(speed);
+    right.set(speed);
+  }
+
+  public void turnRight(double speed) {
+    left.set(-speed);
+    right.set(-speed);
   }
 
   @Override
@@ -56,6 +92,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    timer.reset();
+    timer.start();
     drive.arcadeDrive(10, 0);
     try {
       wait(2);
