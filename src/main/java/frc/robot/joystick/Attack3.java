@@ -10,8 +10,8 @@ public class Attack3 extends JoystickType {
     private static final int DPAD_LEFT = 4;
     private static final int DPAD_RIGHT = 5;
 
-    public Attack3(int id) {
-        super(id);
+    public Attack3(final int id, final boolean primary) {
+        super(id, primary);
     }
 
     @Override
@@ -21,13 +21,11 @@ public class Attack3 extends JoystickType {
 
     @Override
     public boolean getIntakeDown() {
-        // TODO Auto-generated method stub
         return super.getRawButton(DPAD_DOWN);
     }
 
     @Override
     public double getSpeed() {
-        // TODO Auto-generated method stub
         return (-super.getZ() + 1.0) / 2.0;
     }
 }

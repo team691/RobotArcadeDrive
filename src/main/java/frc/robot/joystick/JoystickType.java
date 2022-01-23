@@ -7,14 +7,17 @@ public abstract class JoystickType extends Joystick {
     
     public static JoystickType identify(final int id) {
         switch (DriverStation.getJoystickName(id)) {
-            case Attack3.NAME: return new Attack3(id);
-            case Extreme3DPro.NAME: return new Extreme3DPro(id);
-            default: return new Attack3(id);
+            case Attack3.NAME: return new Attack3(id, id == 0);
+            case Extreme3DPro.NAME: return new Extreme3DPro(id, id == 0);
+            default: return new Attack3(id, id == 0);
         }
     }
 
-    public JoystickType(int id) {
+    public final boolean primary;
+
+    public JoystickType(int id, final boolean primary) {
         super(id);
+        this.primary = primary;
     }
 
     public abstract boolean getIntakeUp();

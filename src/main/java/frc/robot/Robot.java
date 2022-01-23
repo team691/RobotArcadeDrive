@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
   /// Motors
   private final Side left = new Side(new int[] { 2, 3 }, false);
   private final Side right = new Side(new int[] { 1, 4 }, true);
-  private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax intake = new CANSparkMax(5, MotorType.kBrushed);
   private final CANSparkMax shooter = new CANSparkMax(6, MotorType.kBrushless);
 
   private final DifferentialDrive drive = new DifferentialDrive(left, right);
@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
   private final Timer timer = new Timer();
   
   private final JoystickType stick0 = JoystickType.identify(0);
-  private final JoystickType stick1 = JoystickType.identify(1);
+  private final JoystickType stick1 = stick0;//JoystickType.identify(1);
 
   @Override
   public void robotInit() {

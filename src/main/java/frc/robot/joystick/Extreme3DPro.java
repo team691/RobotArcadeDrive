@@ -12,23 +12,31 @@ public class Extreme3DPro extends JoystickType {
     private static final int STICK_LEFT_UPPER = 5;
     private static final int STICK_RIGHT_UPPER = 6;
 
-    public Extreme3DPro(int id) {
-        super(id);
+    public Extreme3DPro(final int id, final boolean primary) {
+        super(id, primary);
     }
 
     @Override
     public boolean getIntakeUp() {
-        return this.getRawButton(STICK_RIGHT_UPPER);
+        // if (primary) {
+            // return false;
+        // } else {
+            return this.getRawButton(STICK_RIGHT_UPPER);
+        // }
     }
 
     @Override
     public boolean getIntakeDown() {
-        return this.getRawButton(STICK_RIGHT_LOWER);
+        // if (primary) {
+            // return false;
+        // } else {
+            return this.getRawButton(STICK_RIGHT_LOWER);
+        // }
     }
 
     @Override
     public double getSpeed() {
-        return (-super.getRawAxis(3) + 1.0) / 2.0;
+        return super.getRawAxis(3);//(super.getRawAxis(3) + 1.0) / 2.0;
     }
 
 }
