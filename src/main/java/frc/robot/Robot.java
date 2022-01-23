@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.joystick.JoystickType;
 
 public class Robot extends TimedRobot {
@@ -30,9 +31,12 @@ public class Robot extends TimedRobot {
   private final JoystickType stick0 = JoystickType.identify(0);
   private final JoystickType stick1 = stick0;//JoystickType.identify(1);
 
+  double kP = 1;
+
   @Override
   public void robotInit() {
     super.robotInit();
+    Shuffleboard.getTab("Tab").add(gyro);
     // SmartDashboard.putString("Joystick 0", stick0.getName());
     // SmartDashboard.putString("Joystick 1", stick1.getName());
   }
@@ -41,12 +45,16 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     super.autonomousPeriodic();
 
+    double error = 90 - gyro.getAngle();
+
+    drive.tankDrive(kP * error, kP * error);
+
     // goBackward();
-    if (timer.get() < 1) {
-      turnLeft(0.5);
-    } else {
-      drive.stopMotor();
-    }
+    // if (timer.get() < 1) {
+    //   turnLeft(0.5);
+    // } else {
+    //   drive.stopMotor();
+    // }
 
   }
 
@@ -101,16 +109,16 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     timer.reset();
     timer.start();
-    drive.tankDrive(10, 0);
-    try {
-      wait(2);
-      drive.tankDrive(0, 0);
-      drive.tankDrive(0, 180);
-      drive.tankDrive(10, 0);
-      drive.tankDrive(0, 0);
-    } catch (InterruptedException e) {
-      drive.stopMotor();
-    }
+    // drive.tankDrive(10, 0);
+    // try {
+    //   wait(2);
+    //   drive.tankDrive(0, 0);
+    //   drive.tankDrive(0, 180);
+    //   drive.tankDrive(10, 0);
+    //   drive.tankDrive(0, 0);
+    // } catch (InterruptedException e) {
+    //   drive.stopMotor();
+    // }
   }
 
 }
