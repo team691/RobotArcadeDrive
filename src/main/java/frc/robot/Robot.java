@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,9 +41,11 @@ public class Robot extends TimedRobot {
   MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
 
-  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
   private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
+  private final TalonFX intake = new TalonFX(7);
+  
   Timer m_timer = new Timer();
   @Override
   public void robotInit() {
@@ -139,20 +142,20 @@ public class Robot extends TimedRobot {
   public void turnRight(){ 
     m_left.set(-0.5);
     m_right.set(-0.5);
-  }
+  }  
   @Override
   public void teleopPeriodic() {
     m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
     //m_intake.set(stick.getZ());
    
      if(stick.getRawButtonPressed(2) == true){
-      m_intake.set(-.5);
+      m_intake.set(-1);
     }
     else if(stick.getRawButtonReleased(2) == true){
       m_intake.set(0);
     }
   if(stick.getRawButtonPressed(3) == true){
-    m_intake.set(.5);
+    m_intake.set(1);
   } else if(stick.getRawButtonReleased(3) == true){
     m_intake.set(0.0);
   }
