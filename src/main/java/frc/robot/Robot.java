@@ -56,8 +56,8 @@ public class Robot extends TimedRobot {
     m_right.setInverted(true);
    
     m_myRobot = new DifferentialDrive(m_left, m_right);
-    stick = new Joystick(0);
-    //stick2 = new Joystick(1);
+    stick = new Joystick(1);
+    stick2 = new Joystick(2);
     //c = new XboxController(0);
   
     //m_rightStick = new Joystick(1);
@@ -145,7 +145,7 @@ public class Robot extends TimedRobot {
   }  
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
+    m_myRobot.tankDrive(-stick2.getZ(), stick.getY());
     //m_intake.set(stick.getZ());
    
      if(stick.getRawButtonPressed(2) == true){
