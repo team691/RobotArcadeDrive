@@ -4,11 +4,19 @@
 
 package frc.robot;
 
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -18,7 +26,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.motorcontrol.CANSparkMax;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder;
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
@@ -30,21 +40,32 @@ public class Robot extends TimedRobot {
   private XboxController c;
  // private Joystick m_rightStick;
 
-  private final CANSparkMax m_leftMotor1 = new CANSparkMax(3, MotorType.kBrushed);
-  private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushed);
+  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  
+double heading;
+
+  private final CANSparkMax m_leftMotor1 = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushless);
 
   MotorControllerGroup m_left = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
-  private final CANSparkMax m_rightMotor1 = new CANSparkMax(1, MotorType.kBrushed);
-  private final CANSparkMax m_rightMotor2 = new CANSparkMax(4, MotorType.kBrushed);
+  private final CANSparkMax m_rightMotor1 = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax m_rightMotor2 = new CANSparkMax(4, MotorType.kBrushless);
 
   MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
 
-  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
-  private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
+  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushless);
+  //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
-  private final TalonFX intake = new TalonFX(7);
+  private final TalonFX m_shoot= new TalonFX(7);
+  
+  private final AnalogPotentiometer sensUltrasonic  = new AnalogPotentiometer(0);
+  //private final SparkMaxRelativeEncoder = new SparkMaxRelativeEncoder();
+  //private final TalonFXControlMode mc = new TalonFXControlMode(0);
+  
+  private final RelativeEncoder encoder = m_intake.getEncoder();
+  double p = encoder.getPosition();
   
   Timer m_timer = new Timer();
   @Override
@@ -52,12 +73,17 @@ public class Robot extends TimedRobot {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
+   encoder.setPosition(0);
+   m_right.setInverted(true);
    
-    m_right.setInverted(true);
-   
+
+   // double kP = 1;
+
     m_myRobot = new DifferentialDrive(m_left, m_right);
     stick = new Joystick(1);
     stick2 = new Joystick(2);
+
+    
     //c = new XboxController(0);
   
     //m_rightStick = new Joystick(1);
@@ -65,44 +91,29 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit(){
     //Code for Auto period goes under this method
-   
-    /*
-    // Makes the robot go forward, turn around, then back
-   //m_myRobot.arcadeDrive(10, 0);
-   m_myRobot.arcadeDrive(-stick.getX(), stick.getY());
-   try{
-      wait(2);
-    } catch (InterruptedException e){
-    }
-    m_myRobot.arcadeDrive(0, 0);
-    m_myRobot.arcadeDrive(0, 180);
-    try{
-      wait(2);
-    } catch (InterruptedException e){
-    }
-    m_myRobot.arcadeDrive(10, 0);
-    try{
-      wait(2);
-    } catch (InterruptedException e){
-    }
-    m_myRobot.arcadeDrive(0, 0);
-
-    */
+    //heading = gyro.getAngle();
     m_timer.reset();
     m_timer.start();
+
+    gyro.reset();
+    heading = gyro.getAngle();
   }
 
   @Override
   public void autonomousPeriodic() {
     // TODO Auto-generated method stub
     super.autonomousPeriodic();
-  
-     
+    double error = 90 -gyro.getAngle();
+
+    m_myRobot.tankDrive(.5, .5);
+    // SmartDashboard.putNumber("Angle", gyro.getAngle());
     // goBackward();
-    if(m_timer.get() < 1){
-    turnLeft();
+    
+    
+    /*if(m_timer.get() < 2){
+        goForwad();
     }
-  
+    */
     //turnLeft(45);
    // turnLeft(45);
     
@@ -121,9 +132,10 @@ public class Robot extends TimedRobot {
      }
     */
    
-   else{
+  /* else{
       m_myRobot.stopMotor();
-  }
+  }*/
+
 }
   public void goForwad(){
     m_left.set(0.5);
@@ -145,10 +157,21 @@ public class Robot extends TimedRobot {
   }  
   @Override
   public void teleopPeriodic() {
-    m_myRobot.tankDrive(-stick2.getZ(), stick.getY());
+    m_myRobot.arcadeDrive(-stick2.getZ(), -stick.getY());
+    //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
     //m_intake.set(stick.getZ());
-   
-     if(stick.getRawButtonPressed(2) == true){
+   //m_intake.set(0.3);
+   SmartDashboard.putNumber("EncoderP", encoder.getPosition());
+    /*if(sensUltrasonic.getRangeInches() <= 10){
+      m_intake.set(0.5);
+    }*/
+
+      /*if(sensUltrasonic.get() < 0.015){
+        m_intake.set(0.5);
+      }*/
+      if(stick.getRawButtonPressed(2) == true){
+        m_intake.set(-1);
+     if(stick.getTriggerPressed() == true){
       m_intake.set(-1);
     }
     else if(stick.getRawButtonReleased(2) == true){
@@ -160,20 +183,20 @@ public class Robot extends TimedRobot {
     m_intake.set(0.0);
   }
   if(stick.getTriggerPressed() == true){
-    m_shoot.set(.5);
+    m_shoot.set(ControlMode.PercentOutput, 0.5);
   } else if(stick.getTriggerReleased() == true){
-    m_shoot.set(0.0);
+    m_shoot.set(ControlMode.PercentOutput, 0.0);
   }
     //neoTest.set(.5);
-  
-     //m_left.set(stick.getY() + stick.getX());
+    
+     //m_left.set(stick.getY());
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
     //SmartDashboard.putNumber("X", stick.getX());
-    //SmartDashboard.putNumber("Y", stick.getY());
-   //m_myRobot.tankDrive(stick.getY(), stick.get(Z));
-    //m_myRobot.tankDrive(c.getY(), c.getX());
+    SmartDashboard.putNumber("Get", sensUltrasonic.get() * 5);
+    System.out.println("Sensor " + sensUltrasonic.get() * 5);
   }
 
  // public void auto
+}
 }
