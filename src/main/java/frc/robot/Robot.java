@@ -160,8 +160,11 @@ double heading;
     m_myRobot.arcadeDrive(-stick2.getZ(), -stick.getY());
     //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
     //m_intake.set(stick.getZ());
-   //m_intake.set(0.3);
-   SmartDashboard.putNumber("EncoderP", encoder.getPosition());
+   m_intake.set(0.3);
+   encoder.setPositionConversionFactor(0.165);
+   SmartDashboard.putNumber("EncoderP in ft", encoder.getPosition());
+
+   SmartDashboard.putNumber("Get", sensUltrasonic.get());
     /*if(sensUltrasonic.getRangeInches() <= 10){
       m_intake.set(0.5);
     }*/
@@ -193,8 +196,7 @@ double heading;
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
     //SmartDashboard.putNumber("X", stick.getX());
-    SmartDashboard.putNumber("Get", sensUltrasonic.get() * 5);
-    System.out.println("Sensor " + sensUltrasonic.get() * 5);
+    
   }
 
  // public void auto
