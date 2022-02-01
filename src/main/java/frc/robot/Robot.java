@@ -65,6 +65,10 @@ double heading;
   //private final TalonFXControlMode mc = new TalonFXControlMode(0);
   
   private final RelativeEncoder encoder = m_intake.getEncoder();
+  private final RelativeEncoder encodeL1 = m_leftMotor1.getEncoder();
+  private final RelativeEncoder encodeL2 = m_leftMotor2.getEncoder();
+  private final RelativeEncoder encodeR1 = m_rightMotor1.getEncoder();
+  private final RelativeEncoder encodeR2 = m_rightMotor2.getEncoder();
   double p = encoder.getPosition();
   
   Timer m_timer = new Timer();
@@ -73,7 +77,10 @@ double heading;
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-   encoder.setPosition(0);
+   encodeL1.setPosition(0);
+   encodeL2.setPosition(0);
+   encodeR1.setPosition(0);
+   encodeR2.setPosition(0);
    m_right.setInverted(true);
    
 
@@ -95,17 +102,40 @@ double heading;
     m_timer.reset();
     m_timer.start();
 
-    gyro.reset();
-    heading = gyro.getAngle();
+    //gyro.reset();
+    //heading = gyro.getAngle();
   }
 
   @Override
   public void autonomousPeriodic() {
     // TODO Auto-generated method stub
     super.autonomousPeriodic();
-    double error = 90 -gyro.getAngle();
 
-    m_myRobot.tankDrive(.5, .5);
+  encodeL1.setPositionConversionFactor(1.4);
+  encodeL2.setPositionConversionFactor(1.4);
+  encodeR1.setPositionConversionFactor(1.4);
+  encodeR2.setPositionConversionFactor(1.4);
+
+
+   SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
+   SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
+   SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
+   SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
+   
+   /*while(encodeL1.getPosition() <= 120){
+      goForward();
+   }*/
+   
+   if(m_timer.get() <=20){
+   while(encodeL1.getPosition() <= 60){
+    goForward();
+  }
+}
+    if(m_timer.get() > 20){
+    while(encodeL1.getPosition() >= 0){
+      goBackward();
+    }
+  }
     // SmartDashboard.putNumber("Angle", gyro.getAngle());
     // goBackward();
     
@@ -137,22 +167,22 @@ double heading;
   }*/
 
 }
-  public void goForwad(){
-    m_left.set(0.5);
-    m_right.set(-0.5);
+  public void goForward(){
+    m_left.set(0.25);
+    m_right.set(0.25);
   }
 
   public void goBackward(){
-    m_left.set(-0.5);
-    m_right.set(0.5);
+    m_left.set(-0.25);
+    m_right.set(-0.25);
   }
   public void turnLeft(){
-    m_left.set(0.5);
+    m_left.set(-0.5);
     m_right.set(0.5);
   
 }
   public void turnRight(){ 
-    m_left.set(-0.5);
+    m_left.set(0.5);
     m_right.set(-0.5);
   }  
   @Override
@@ -160,9 +190,19 @@ double heading;
     m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ());
     //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
     //m_intake.set(stick.getZ());
-   m_intake.set(0.3);
-   encoder.setPositionConversionFactor(0.165);
-   SmartDashboard.putNumber("EncoderP in ft", encoder.getPosition());
+  // m_intake.set(0.3);
+   //encoder.setPositionConversionFactor(0.165);
+
+   encodeL1.setPositionConversionFactor(Math.PI/2);
+   encodeL2.setPositionConversionFactor(Math.PI/2);
+   encodeR1.setPositionConversionFactor(Math.PI/2);
+   encodeR2.setPositionConversionFactor(Math.PI/2);
+
+
+   SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
+   SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
+   SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
+   SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
 
    SmartDashboard.putNumber("Get", sensUltrasonic.get());
     /*if(sensUltrasonic.getRangeInches() <= 10){
