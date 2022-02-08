@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -21,6 +22,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//import com.revrobotics.AnalogInput;
 
 //import java.util.Timer;
 
@@ -55,21 +58,22 @@ double heading;
   MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
 
-  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
   private final TalonFX m_shoot= new TalonFX(7);
   
-  private final AnalogPotentiometer sensUltrasonic  = new AnalogPotentiometer(0);
+  //private final AnalogPotentiometer sensUltrasonic  = new AnalogPotentiometer(0);
+  private final AnalogInput sensUltrasonic  = new AnalogInput(0);
   //private final SparkMaxRelativeEncoder = new SparkMaxRelativeEncoder();
   //private final TalonFXControlMode mc = new TalonFXControlMode(0);
   
-  private final RelativeEncoder encoder = m_intake.getEncoder();
+  //private final RelativeEncoder encoder = m_intake.getEncoder();
   private final RelativeEncoder encodeL1 = m_leftMotor1.getEncoder();
   private final RelativeEncoder encodeL2 = m_leftMotor2.getEncoder();
   private final RelativeEncoder encodeR1 = m_rightMotor1.getEncoder();
   private final RelativeEncoder encodeR2 = m_rightMotor2.getEncoder();
-  double p = encoder.getPosition();
+  
   
   Timer m_timer = new Timer();
   @Override
@@ -204,7 +208,18 @@ double heading;
    SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
    SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
 
-   SmartDashboard.putNumber("Get", sensUltrasonic.get());
+   SmartDashboard.putNumber("EncoderL1 speed", encodeL1.getVelocity());
+   SmartDashboard.putNumber("EncoderL2 speed", encodeL2.getVelocity());
+   SmartDashboard.putNumber("EncoderR1 speed", encodeR1.getVelocity());
+   SmartDashboard.putNumber("EncoderR2 speed", encodeR2.getVelocity());
+
+   SmartDashboard.putNumber("Get Voltage", sensUltrasonic.getVoltage());
+   if(sensUltrasonic.getVoltage() < 0.3){
+    m_intake.set(0.5);
+  }
+  else{
+    m_intake.set(0.0);
+  }
     /*if(sensUltrasonic.getRangeInches() <= 10){
       m_intake.set(0.5);
     }*/
@@ -230,6 +245,7 @@ double heading;
   } else if(stick.getTriggerReleased() == true){
     m_shoot.set(ControlMode.PercentOutput, 0.0);
   }
+   
     //neoTest.set(.5);
     
      //m_left.set(stick.getY());
