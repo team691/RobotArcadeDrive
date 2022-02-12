@@ -193,7 +193,7 @@ double heading;
   }  
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive(-stick2.getY(), stick.getZ());
+    m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ());
     //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
     //m_intake.set(stick.getZ());
   // m_intake.set(0.3);
