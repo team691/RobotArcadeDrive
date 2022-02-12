@@ -10,16 +10,18 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Ultrasonic;
+//import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
+//import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.AnalogInput;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+//import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+//import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+//import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -31,7 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder;
+//import com.revrobotics.SparkMaxRelativeEncoder;
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
@@ -61,7 +63,7 @@ double heading;
   private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
-  private final TalonFX m_shoot= new TalonFX(7);
+  private final WPI_TalonFX m_shoot= new WPI_TalonFX(7);
   
   //private final AnalogPotentiometer sensUltrasonic  = new AnalogPotentiometer(0);
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
@@ -191,7 +193,7 @@ double heading;
   }  
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ());
+    m_myRobot.arcadeDrive(-stick2.getY(), stick.getZ());
     //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
     //m_intake.set(stick.getZ());
   // m_intake.set(0.3);
@@ -241,9 +243,9 @@ double heading;
     m_intake.set(0.0);
   }
   if(stick.getTriggerPressed() == true){
-    m_shoot.set(ControlMode.PercentOutput, 0.5);
+    m_shoot.set(0.5);
   } else if(stick.getTriggerReleased() == true){
-    m_shoot.set(ControlMode.PercentOutput, 0.0);
+    m_shoot.set(0.0);
   }
    
     //neoTest.set(.5);
