@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.joystick.JoystickType;
 
 public class Robot extends TimedRobot {
@@ -31,14 +32,26 @@ public class Robot extends TimedRobot {
   private final JoystickType stick0 = JoystickType.identify(0);
   private final JoystickType stick1 = stick0;//JoystickType.identify(1);
 
-  double kP = 1;
+  private double kP = 1;
+  private double heading;
+
+
 
   @Override
   public void robotInit() {
     super.robotInit();
-    Shuffleboard.getTab("Tab").add(gyro);
+    ShuffleboardTab tab = Shuffleboard.getTab("Main");
+    tab.add(gyro);
     // SmartDashboard.putString("Joystick 0", stick0.getName());
     // SmartDashboard.putString("Joystick 1", stick1.getName());
+  }
+
+  @Override
+  public void autonomousInit() {
+    timer.reset();
+    gyro.reset();
+    timer.start();
+    heading = gyro.getAngle();
   }
 
   @Override
