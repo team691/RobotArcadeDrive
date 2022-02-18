@@ -7,39 +7,35 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-//import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-//import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.AnalogInput;
-
-//import com.ctre.phoenix.motorcontrol.ControlMode;
-//import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-//import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-//import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-//import com.revrobotics.AnalogInput;
+import com.ctre.phoenix.led.*;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-//import java.util.Timer;
 
-//import edu.wpi.first.wpilibj.motorcontrol.CANSparkMax;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-//import com.revrobotics.SparkMaxRelativeEncoder;
+
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
+  
+  //All inputs
   private Joystick stick;
   private Joystick stick2;
   private XboxController c;
@@ -49,6 +45,7 @@ public class Robot extends TimedRobot {
   
 double heading;
 
+  //Motors
   private final CANSparkMax m_leftMotor1 = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushless);
 
@@ -65,17 +62,27 @@ double heading;
 
   private final WPI_TalonFX m_shoot= new WPI_TalonFX(7);
   
-  //private final AnalogPotentiometer sensUltrasonic  = new AnalogPotentiometer(0);
+  //Sensor for uptake
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
-  //private final SparkMaxRelativeEncoder = new SparkMaxRelativeEncoder();
-  //private final TalonFXControlMode mc = new TalonFXControlMode(0);
   
-  //private final RelativeEncoder encoder = m_intake.getEncoder();
+  
+  //Motor Encoders
   private final RelativeEncoder encodeL1 = m_leftMotor1.getEncoder();
   private final RelativeEncoder encodeL2 = m_leftMotor2.getEncoder();
   private final RelativeEncoder encodeR1 = m_rightMotor1.getEncoder();
   private final RelativeEncoder encodeR2 = m_rightMotor2.getEncoder();
-  
+
+  //LED controls
+  private final CANdle candle = new CANdle (0);
+  private final RainbowAnimation r = new RainbowAnimation(1,1,140);
+  private final FireAnimation f = new FireAnimation(1,1,8,.2,.4);
+  private final RgbFadeAnimation fa = new RgbFadeAnimation (1,.7,8);
+  private final StrobeAnimation s = new StrobeAnimation (100,200,8, 255, 1, 8);
+  private final ColorFlowAnimation cf = new ColorFlowAnimation(100,200,8, 255, 1, 8, Direction.Backward);
+
+  //Pnuematics
+  private final PneumaticHub p = new PneumaticHub(62);
+  private final DoubleSolenoid d = p.makeDoubleSolenoid (8,9);
   
   Timer m_timer = new Timer();
   @Override
@@ -95,7 +102,7 @@ double heading;
     m_myRobot = new DifferentialDrive(m_left, m_right);
     stick = new Joystick(1);
     stick2 = new Joystick(2);
-
+    c = new XboxController(3);
     
     //c = new XboxController(0);
   
@@ -114,34 +121,33 @@ double heading;
 
   @Override
   public void autonomousPeriodic() {
-    // TODO Auto-generated method stub
     super.autonomousPeriodic();
 
-  encodeL1.setPositionConversionFactor(1.4);
-  encodeL2.setPositionConversionFactor(1.4);
-  encodeR1.setPositionConversionFactor(1.4);
-  encodeR2.setPositionConversionFactor(1.4);
+    encodeL1.setPositionConversionFactor(1.4);
+    encodeL2.setPositionConversionFactor(1.4);
+    encodeR1.setPositionConversionFactor(1.4);
+    encodeR2.setPositionConversionFactor(1.4);
 
 
-   SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
-   SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
-   SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
-   SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
+    SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
+     SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
+    SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
+    SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
    
    /*while(encodeL1.getPosition() <= 120){
       goForward();
    }*/
    
-   if(m_timer.get() <=20){
-   while(encodeL1.getPosition() <= 60){
-    goForward();
+    if(m_timer.get() <=20){ 
+      while(encodeL1.getPosition() <= 60){
+      goForward();
+      }
   }
-}
     if(m_timer.get() > 20){
-    while(encodeL1.getPosition() >= 0){
+     while(encodeL1.getPosition() >= 0){
       goBackward();
+      }
     }
-  }
     // SmartDashboard.putNumber("Angle", gyro.getAngle());
     // goBackward();
     
@@ -194,9 +200,6 @@ double heading;
   @Override
   public void teleopPeriodic() {
     m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ()/1.2);
-    //m_myRobot.tankDrive(-stick2.getY(), stick.getY());
-    //m_intake.set(stick.getZ());
-  // m_intake.set(0.3);
    //encoder.setPositionConversionFactor(0.165);
 
    encodeL1.setPositionConversionFactor(Math.PI/2);
@@ -205,7 +208,7 @@ double heading;
    encodeR2.setPositionConversionFactor(Math.PI/2);
 
 
-   SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
+   /*SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
    SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
    SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
    SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
@@ -213,7 +216,7 @@ double heading;
    SmartDashboard.putNumber("EncoderL1 speed", encodeL1.getVelocity());
    SmartDashboard.putNumber("EncoderL2 speed", encodeL2.getVelocity());
    SmartDashboard.putNumber("EncoderR1 speed", encodeR1.getVelocity());
-   SmartDashboard.putNumber("EncoderR2 speed", encodeR2.getVelocity());
+   SmartDashboard.putNumber("EncoderR2 speed", encodeR2.getVelocity());*
 
    SmartDashboard.putNumber("Get Voltage", sensUltrasonic.getVoltage());
    if(sensUltrasonic.getVoltage() < 0.3){
@@ -221,14 +224,8 @@ double heading;
   }
   else{
     m_intake.set(0.0);
-  }
-    /*if(sensUltrasonic.getRangeInches() <= 10){
-      m_intake.set(0.5);
-    }*/
-
-      /*if(sensUltrasonic.get() < 0.015){
-        m_intake.set(0.5);
-      }*/
+  }*/
+   
       if(stick.getRawButtonPressed(2) == true){
         m_intake.set(-1);
      if(stick.getTriggerPressed() == true){
@@ -247,16 +244,21 @@ double heading;
   } else if(stick.getTriggerReleased() == true){
     m_shoot.set(0.0);
   }
-   
-    //neoTest.set(.5);
-    
      //m_left.set(stick.getY());
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
-    //SmartDashboard.putNumber("X", stick.getX());
-    
   }
-
- // public void auto
 }
+
+public void disabledInit() {
+  super.disabledInit();
+  candle.setLEDs(255,0,0);
+}
+@Override
+public void disabledExit() {
+  
+  super.disabledExit();
+  candle.setLEDs(0,255,0);
+}
+
 }
