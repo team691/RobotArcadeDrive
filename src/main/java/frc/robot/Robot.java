@@ -81,8 +81,9 @@ double heading;
   private final ColorFlowAnimation cf = new ColorFlowAnimation(100,200,8, 255, 1, 8, Direction.Backward);
 
   //Pnuematics
-  private final PneumaticHub p = new PneumaticHub(62);
-  private final DoubleSolenoid d = p.makeDoubleSolenoid (8,9);
+  private final PneumaticHub pHub = new PneumaticHub(62);
+  private final DoubleSolenoid dSolenoid1 = pHub.makeDoubleSolenoid (8,9);
+  private DoubleSolenoid.Value state = DoubleSolenoid.Value.kReverse;
   
   Timer m_timer = new Timer();
   @Override
@@ -226,29 +227,65 @@ double heading;
     m_intake.set(0.0);
   }*/
    
-      if(stick.getRawButtonPressed(2) == true){
+
+  //intake 
+    if(c.getRightBumperPressed() == true){
         m_intake.set(-1);
-     if(stick.getTriggerPressed() == true){
-      m_intake.set(-1);
     }
-    else if(stick.getRawButtonReleased(2) == true){
+    else if(c.getLeftBumperPressed() == true){
+      m_intake.set(1);
+    }
+    else{
       m_intake.set(0);
     }
+
   if(stick.getRawButtonPressed(3) == true){
     m_intake.set(1);
   } else if(stick.getRawButtonReleased(3) == true){
     m_intake.set(0.0);
   }
-  if(stick.getTriggerPressed() == true){
-    m_shoot.set(0.5);
-  } else if(stick.getTriggerReleased() == true){
-    m_shoot.set(0.0);
-  }
+ 
+ //Set speed for shooting and shoots
+  if (stick.getTriggerPressed()){
+    if (c.getXButtonPressed()){
+      m_shoot.set(0.25);
+    }
+    if (c.getYButtonPressed()){
+      m_shoot.set(0.75);
+    }
+    if (c.getBButtonPressed()){
+      m_shoot.set(0.8);
+    }
+    if (c.getAButtonPressed()){
+      m_shoot.set(1);
+    }
+    else{
+      m_shoot.set(.5);
+    }
+    }
+ else if (stick.getTriggerReleased()){
+   m_shoot.set(0);
+ }
+
+
+ //pnuematics
+ if(c.getLeftStickButtonPressed()){
+  candle.setLEDs (255,204,0);
+ if(state == DoubleSolenoid.Value.kReverse){
+  state = DoubleSolenoid.Value.kForward;
+  dSolenoid1.set(state);
+ }
+ else{
+  state = DoubleSolenoid.Value.kReverse;
+  dSolenoid1.set(state);
+  candle.setLEDs (100,0,230);
+ }
+}
      //m_left.set(stick.getY());
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
   }
-}
+
 
 public void disabledInit() {
   super.disabledInit();
