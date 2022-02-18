@@ -48,20 +48,22 @@ double heading;
   //Motors
   private final CANSparkMax m_leftMotor1 = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushless);
-
   MotorControllerGroup m_left = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
   private final CANSparkMax m_rightMotor1 = new CANSparkMax(3, MotorType.kBrushless);
   private final CANSparkMax m_rightMotor2 = new CANSparkMax(4, MotorType.kBrushless);
-
   MotorControllerGroup m_right = new MotorControllerGroup(m_rightMotor1, m_rightMotor2);
 
-
   private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
-  //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
   private final WPI_TalonFX m_shoot= new WPI_TalonFX(7);
-  
+  //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
+
+  private final CANSparkMax uptake1 = new CANSparkMax(8, MotorType.kBrushless);
+  private final CANSparkMax uptake2= new CANSparkMax(9, MotorType.kBrushless);
+  private final CANSparkMax uptake3 = new CANSparkMax(10, MotorType.kBrushless);
+  MotorControllerGroup uptake = new MotorControllerGroup(uptake1, uptake2, uptake3); 
+
   //Sensor for uptake
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
   
@@ -280,6 +282,14 @@ double heading;
   dSolenoid1.set(state);
   candle.setLEDs (100,0,230);
  }
+}
+
+
+if(c.getRightStickButtonPressed()){
+  uptake.set(.7);
+}
+else{
+uptake.set(0);
 }
      //m_left.set(stick.getY());
  // m_left.set(stick.getY() + stick.getX());
