@@ -56,12 +56,12 @@ double heading;
 
   private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
 
-  private final WPI_TalonFX m_shoot= new WPI_TalonFX(7);
+  private final WPI_TalonFX m_shoot= new WPI_TalonFX(6);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
-  private final CANSparkMax uptake1 = new CANSparkMax(8, MotorType.kBrushless);
-  private final CANSparkMax uptake2= new CANSparkMax(9, MotorType.kBrushless);
-  private final CANSparkMax uptake3 = new CANSparkMax(10, MotorType.kBrushless);
+  private final CANSparkMax uptake1 = new CANSparkMax(7, MotorType.kBrushless);
+  private final CANSparkMax uptake2= new CANSparkMax(8, MotorType.kBrushless);
+  private final CANSparkMax uptake3 = new CANSparkMax(9, MotorType.kBrushless);
   MotorControllerGroup uptake = new MotorControllerGroup(uptake1, uptake2, uptake3); 
 
   //Sensor for uptake
@@ -85,6 +85,7 @@ double heading;
   //Pnuematics
   private final PneumaticHub pHub = new PneumaticHub(62);
   private final DoubleSolenoid dSolenoid1 = pHub.makeDoubleSolenoid (8,9);
+  private final DoubleSolenoid dSolenoid2 = pHub.makeDoubleSolenoid (10,11);
   private DoubleSolenoid.Value state = DoubleSolenoid.Value.kReverse;
   
   Timer m_timer = new Timer();
@@ -276,10 +277,12 @@ double heading;
  if(state == DoubleSolenoid.Value.kReverse){
   state = DoubleSolenoid.Value.kForward;
   dSolenoid1.set(state);
+  dSolenoid2.set(state);
  }
  else{
   state = DoubleSolenoid.Value.kReverse;
   dSolenoid1.set(state);
+  dSolenoid2.set(state);
   candle.setLEDs (100,0,230);
  }
 }
