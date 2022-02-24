@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-
+//import edu.wpi.first.wpilibj.PlAY;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -56,13 +56,16 @@ double heading;
 
   private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
 
-  private final WPI_TalonFX m_shoot= new WPI_TalonFX(6);
+  private final WPI_TalonFX shoot1= new WPI_TalonFX(6);
+  private final WPI_TalonFX shoot2= new WPI_TalonFX(7);
+  private final CANSparkMax kicker = new CANSparkMax(8, MotorType.kBrushed);
+  MotorControllerGroup m_shoot = new MotorControllerGroup(shoot1, shoot2, kicker);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
-  private final CANSparkMax uptake1 = new CANSparkMax(7, MotorType.kBrushless);
-  private final CANSparkMax uptake2= new CANSparkMax(8, MotorType.kBrushless);
-  private final CANSparkMax uptake3 = new CANSparkMax(9, MotorType.kBrushless);
-  MotorControllerGroup uptake = new MotorControllerGroup(uptake1, uptake2, uptake3); 
+  
+  private final CANSparkMax uptake= new CANSparkMax(9, MotorType.kBrushed);
+  //private final CANSparkMax uptake3 = new CANSparkMax(, MotorType.kBrushless);
+  //MotorControllerGroup uptake = new MotorControllerGroup(uptake1, uptake2); 
 
   //Sensor for uptake
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
@@ -99,14 +102,15 @@ double heading;
    encodeR1.setPosition(0);
    encodeR2.setPosition(0);
    m_right.setInverted(true);
+   shoot2.setInverted(true);
    
 
    // double kP = 1;
 
     m_myRobot = new DifferentialDrive(m_left, m_right);
-    stick = new Joystick(1);
-    stick2 = new Joystick(2);
-    c = new XboxController(3);
+    stick = new Joystick(0);
+    stick2 = new Joystick(1);
+    c = new XboxController(2);
     
     //c = new XboxController(0);
   
@@ -203,6 +207,7 @@ double heading;
   }  
   @Override
   public void teleopPeriodic() {
+    candle.setLEDs(255, 0, 0);
     m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ()/1.2);
    //encoder.setPositionConversionFactor(0.165);
 
@@ -234,22 +239,20 @@ double heading;
   //intake 
     if(c.getRightBumperPressed() == true){
         m_intake.set(-1);
+        candle.setLEDs(255, 255, 255);
     }
     else if(c.getLeftBumperPressed() == true){
       m_intake.set(1);
+      candle.setLEDs(0, 0, 0);
     }
     else{
       m_intake.set(0);
     }
 
-  if(stick.getRawButtonPressed(3) == true){
-    m_intake.set(1);
-  } else if(stick.getRawButtonReleased(3) == true){
-    m_intake.set(0.0);
-  }
  
  //Set speed for shooting and shoots
   if (stick.getTriggerPressed()){
+    candle.setLEDs(0,0,255);
     if (c.getXButtonPressed()){
       m_shoot.set(0.25);
     }
@@ -273,7 +276,6 @@ double heading;
 
  //pnuematics
  if(c.getLeftStickButtonPressed()){
-  candle.setLEDs (255,204,0);
  if(state == DoubleSolenoid.Value.kReverse){
   state = DoubleSolenoid.Value.kForward;
   dSolenoid1.set(state);
@@ -283,7 +285,7 @@ double heading;
   state = DoubleSolenoid.Value.kReverse;
   dSolenoid1.set(state);
   dSolenoid2.set(state);
-  candle.setLEDs (100,0,230);
+  //candle.setLEDs (100,0,230);
  }
 }
 
@@ -297,6 +299,12 @@ uptake.set(0);
      //m_left.set(stick.getY());
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
+    if(encodeL1.getVelocity() > 0){
+      candle.setLEDs(255, 255, 0);
+    }
+    else if(encodeL1.getVelocity() < 0){
+      candle.setLEDs (127, 0, 255);
+    }
   }
 
 
