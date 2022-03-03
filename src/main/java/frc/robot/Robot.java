@@ -246,13 +246,13 @@ double heading;
   //System.out.println(shoot1.getSelectedSensorVelocity());
   //intake 
     if(c.getRightBumperPressed()){
-        m_intake.set(-.35);
-        uptake.set(.7);
+        m_intake.set(-.9);
+        uptake.set(.9);
         candle.setLEDs(255, 255, 255);
     }
     else if(c.getLeftBumperPressed()){
-      m_intake.set(.5);
-      uptake.set(.7);
+      m_intake.set(.9);
+     // uptake.set(.7);
       candle.setLEDs(0, 0, 0);
     }
     else if(c.getRightBumperReleased()  || c.getLeftBumperReleased()){
@@ -311,7 +311,7 @@ double heading;
 //c.getRightStickButton();
 c.getRawButtonPressed(7);
 if(c.getRawButton(7)){
-  uptake.set(.7);
+  uptake.set(1);
 }
 else{
 
