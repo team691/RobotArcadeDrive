@@ -147,15 +147,20 @@ double heading;
       goForward();
    }*/
    
-    if(m_timer.get() <=20){ 
-      while(encodeL1.getPosition() <= 60){
-      goForward();
-      }
+    if(m_timer.get() <= 2){ 
+      m_shoot.set(.35);
+      uptake.set(.7);
   }
-    if(m_timer.get() > 20){
-     while(encodeL1.getPosition() >= 0){
-      goBackward();
+    else if(m_timer.get() <= 4  && m_timer.get() > 2){
+        kicker.set(1);
       }
+    else if (m_timer.get() > 4){
+      kicker.set(0);
+      m_shoot.set(0);
+      uptake.set(0);
+      while(encodeL1.getPosition() <= 60){
+        goBackward();
+    }
     }
     // SmartDashboard.putNumber("Angle", gyro.getAngle());
     // goBackward();
@@ -256,7 +261,7 @@ double heading;
     }
 
  
- //Set speed for shooting and shoots
+ //Activates kicker to launch ball
   if (stick2.getTrigger()){
     candle.setLEDs(0,0,255);
     kicker.set(1);
