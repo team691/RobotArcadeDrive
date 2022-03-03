@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   private XboxController c;
  // private Joystick m_rightStick;
 
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  //private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   
 double heading;
 
@@ -59,7 +59,7 @@ double heading;
   private final WPI_TalonFX shoot1= new WPI_TalonFX(6);
   private final WPI_TalonFX shoot2= new WPI_TalonFX(7);
   private final CANSparkMax kicker = new CANSparkMax(8, MotorType.kBrushed);
-  MotorControllerGroup m_shoot = new MotorControllerGroup(shoot1, shoot2, kicker);
+  MotorControllerGroup m_shoot = new MotorControllerGroup(shoot1, shoot2);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
   
@@ -88,7 +88,7 @@ double heading;
   //Pnuematics
   private final PneumaticHub pHub = new PneumaticHub(62);
   private final DoubleSolenoid dSolenoid1 = pHub.makeDoubleSolenoid (8,9);
-  private final DoubleSolenoid dSolenoid2 = pHub.makeDoubleSolenoid (10,11);
+  private final DoubleSolenoid dSolenoid2 = pHub.makeDoubleSolenoid (6,7);
   private DoubleSolenoid.Value state = DoubleSolenoid.Value.kReverse;
   
   Timer m_timer = new Timer();
@@ -103,6 +103,7 @@ double heading;
    encodeR2.setPosition(0);
    m_right.setInverted(true);
    shoot2.setInverted(true);
+   //shoot1.setInverted(true);
    
 
    // double kP = 1;
@@ -208,6 +209,8 @@ double heading;
   @Override
   public void teleopPeriodic() {
     candle.setLEDs(255, 0, 0);
+
+    //Makes robot drive
     m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ()/1.2);
    //encoder.setPositionConversionFactor(0.165);
 
@@ -216,7 +219,7 @@ double heading;
    encodeR1.setPositionConversionFactor(Math.PI/2);
    encodeR2.setPositionConversionFactor(Math.PI/2);
 
-
+    
    /*SmartDashboard.putNumber("EncoderL1 inches", encodeL1.getPosition());
    SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
    SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
@@ -234,48 +237,60 @@ double heading;
   else{
     m_intake.set(0.0);
   }*/
-   
-
+ // SmartDashboard.getNumber("rpm", shoot1.getSelectedSensorVelocity());
+  //System.out.println(shoot1.getSelectedSensorVelocity());
   //intake 
-    if(c.getRightBumperPressed() == true){
-        m_intake.set(-1);
+    if(c.getRightBumperPressed()){
+        m_intake.set(-.35);
+        uptake.set(.7);
         candle.setLEDs(255, 255, 255);
     }
-    else if(c.getLeftBumperPressed() == true){
-      m_intake.set(1);
+    else if(c.getLeftBumperPressed()){
+      m_intake.set(.5);
+      uptake.set(.7);
       candle.setLEDs(0, 0, 0);
     }
-    else{
+    else if(c.getRightBumperReleased()  || c.getLeftBumperReleased()){
       m_intake.set(0);
+      uptake.set(0);
     }
 
  
  //Set speed for shooting and shoots
-  if (stick.getTriggerPressed()){
+  if (stick2.getTrigger()){
     candle.setLEDs(0,0,255);
-    if (c.getXButtonPressed()){
-      m_shoot.set(0.25);
-    }
-    if (c.getYButtonPressed()){
-      m_shoot.set(0.75);
-    }
-    if (c.getBButtonPressed()){
-      m_shoot.set(0.8);
-    }
-    if (c.getAButtonPressed()){
-      m_shoot.set(1);
+    kicker.set(1);
     }
     else{
-      m_shoot.set(.5);
+      kicker.set(0);
     }
+    //Low goal, point blank
+    if(c.getRawButton(2)){
+      m_shoot.set(.35);
+      uptake.set(.7);
     }
- else if (stick.getTriggerReleased()){
-   m_shoot.set(0);
- }
+    //high, tarmac
+    else if(c.getRawButton(3)){
+      m_shoot.set(.45);
+      uptake.set(.7);
+    }
+    else{
+      m_shoot.set(0);
+      uptake.set(0);
+    }
+   // kicker.set(.5);
+  
+   //SmartDashboard.getNumber("rpm", shoot1.getMotorOutputPercent());
+   /* if(shoot1.getSelectedSensorVelocity() > rpm * speed * .8){
+      kicker.set(1);
+      uptake.set(.7);
+    }*/
+    
+ 
 
 
  //pnuematics
- if(c.getLeftStickButtonPressed()){
+ if(c.getRawButtonPressed(8)){
  if(state == DoubleSolenoid.Value.kReverse){
   state = DoubleSolenoid.Value.kForward;
   dSolenoid1.set(state);
@@ -288,12 +303,13 @@ double heading;
   //candle.setLEDs (100,0,230);
  }
 }
-
-
-if(c.getRightStickButtonPressed()){
+//c.getRightStickButton();
+c.getRawButtonPressed(7);
+if(c.getRawButton(7)){
   uptake.set(.7);
 }
 else{
+
 uptake.set(0);
 }
      //m_left.set(stick.getY());
