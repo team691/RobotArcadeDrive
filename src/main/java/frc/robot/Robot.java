@@ -123,6 +123,10 @@ double heading;
     //heading = gyro.getAngle();
     m_timer.reset();
     m_timer.start();
+    encodeL1.setPosition(0);
+    encodeL2.setPosition(0);
+    encodeR1.setPosition(0);
+    encodeR2.setPosition(0);
 
     //gyro.reset();
     //heading = gyro.getAngle();
@@ -148,7 +152,7 @@ double heading;
    }*/
    
     if(m_timer.get() <= 2){ 
-      m_shoot.set(.35);
+      m_shoot.set(.5);
       uptake.set(.7);
   }
     else if(m_timer.get() <= 4  && m_timer.get() > 2){
@@ -158,10 +162,14 @@ double heading;
       kicker.set(0);
       m_shoot.set(0);
       uptake.set(0);
-      while(encodeL1.getPosition() <= 60){
+      if(encodeL1.getPosition() >= -72){
         goBackward();
     }
+      else{
+        stop();
+      }
     }
+    
     // SmartDashboard.putNumber("Angle", gyro.getAngle());
     // goBackward();
     
@@ -211,12 +219,16 @@ double heading;
     m_left.set(0.5);
     m_right.set(-0.5);
   }  
+  public void stop(){ 
+    m_left.set(0);
+    m_right.set(0);
+  }  
   @Override
   public void teleopPeriodic() {
     candle.setLEDs(255, 0, 0);
 
     //Makes robot drive
-    m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ()/1.2);
+    m_myRobot.arcadeDrive(-stick.getY()/1.1, stick2.getZ()/1);
    //encoder.setPositionConversionFactor(0.165);
 
    encodeL1.setPositionConversionFactor(Math.PI/2);
@@ -271,16 +283,20 @@ double heading;
     }
     //Low goal, point blank
     if(c.getRawButton(2)){
-      m_shoot.set(.35);
+      m_shoot.set(.6);
       uptake.set(.7);
     }
     //high, tarmac
     else if(c.getRawButton(3)){
-      m_shoot.set(.45);
+      m_shoot.set(1);
       uptake.set(.7);
     }
-    else{
-      m_shoot.set(0);
+    else if(c.getRawButton(4)){
+      m_shoot.set(.1);
+      uptake.set(.7);
+    }
+    else{                                   
+      m_shoot.set(0);                                                                                                                                   
       uptake.set(0);
     }
    // kicker.set(.5);
