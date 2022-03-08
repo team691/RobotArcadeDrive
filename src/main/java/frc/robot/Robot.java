@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.wpilibj.PlAY;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
@@ -69,7 +70,9 @@ double heading;
 
   //Sensor for uptake
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
-  
+
+  private final SlewRateLimiter accel = new SlewRateLimiter(1.1);
+  private final SlewRateLimiter accelT = new SlewRateLimiter(1.35);
   
   //Motor Encoders
   private final RelativeEncoder encodeL1 = m_leftMotor1.getEncoder();
@@ -228,7 +231,8 @@ double heading;
     candle.setLEDs(255, 0, 0);
 
     //Makes robot drive
-    m_myRobot.arcadeDrive(-stick.getY()/1.1, stick2.getZ()/1);
+    //divide Z by 1.2
+    m_myRobot.arcadeDrive(-accel.calculate(stick.getY()), accelT.calculate(stick2.getZ())/1.2);
    //encoder.setPositionConversionFactor(0.165);
 
    encodeL1.setPositionConversionFactor(Math.PI/2);
