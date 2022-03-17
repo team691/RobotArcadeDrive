@@ -71,7 +71,7 @@ double heading;
   //Sensor for uptake
   private final AnalogInput sensUltrasonic  = new AnalogInput(0);
 
-  private final SlewRateLimiter accel = new SlewRateLimiter(1.1);
+  private final SlewRateLimiter accel = new SlewRateLimiter(1.4);
   private final SlewRateLimiter accelT = new SlewRateLimiter(1.35);
   
   //Motor Encoders
@@ -81,13 +81,13 @@ double heading;
   private final RelativeEncoder encodeR2 = m_rightMotor2.getEncoder();
 
   //LED controls
-  private final CANdle candle = new CANdle (0);
+  /*private final CANdle candle = new CANdle (0);
   private final RainbowAnimation r = new RainbowAnimation(1,1,140);
   private final FireAnimation f = new FireAnimation(1,1,8,.2,.4);
   private final RgbFadeAnimation fa = new RgbFadeAnimation (1,.7,8);
   private final StrobeAnimation s = new StrobeAnimation (100,200,8, 255, 1, 8);
   private final ColorFlowAnimation cf = new ColorFlowAnimation(100,200,8, 255, 1, 8, Direction.Backward);
-
+  */
   //Pnuematics
   private final PneumaticHub pHub = new PneumaticHub(62);
   private final DoubleSolenoid dSolenoid1 = pHub.makeDoubleSolenoid (8,9);
@@ -155,7 +155,7 @@ double heading;
    }*/
    
     if(m_timer.get() <= 2){ 
-      m_shoot.set(.5);
+      m_shoot.set(.55);
       uptake.set(.7);
   }
     else if(m_timer.get() <= 4  && m_timer.get() > 2){
@@ -228,11 +228,11 @@ double heading;
   }  
   @Override
   public void teleopPeriodic() {
-    candle.setLEDs(255, 0, 0);
+   // candle.setLEDs(255, 0, 0);
 
     //Makes robot drive
     //divide Z by 1.2
-    m_myRobot.arcadeDrive(-accel.calculate(stick.getY()), accelT.calculate(stick2.getZ())/1.2);
+    m_myRobot.arcadeDrive(-accel.calculate(stick.getY()), stick2.getZ()/1.2);
    //encoder.setPositionConversionFactor(0.165);
 
    encodeL1.setPositionConversionFactor(Math.PI/2);
@@ -264,12 +264,12 @@ double heading;
     if(c.getRightBumperPressed()){
         m_intake.set(-.9);
         uptake.set(.9);
-        candle.setLEDs(255, 255, 255);
+        //candle.setLEDs(255, 255, 255);
     }
     else if(c.getLeftBumperPressed()){
       m_intake.set(.9);
      // uptake.set(.7);
-      candle.setLEDs(0, 0, 0);
+      //candle.setLEDs(0, 0, 0);
     }
     else if(c.getRightBumperReleased()  || c.getLeftBumperReleased()){
       m_intake.set(0);
@@ -279,7 +279,7 @@ double heading;
  
  //Activates kicker to launch ball
   if (stick2.getTrigger()){
-    candle.setLEDs(0,0,255);
+    //candle.setLEDs(0,0,255);
     kicker.set(1);
     }
     else{
@@ -287,14 +287,15 @@ double heading;
     }
     //Low goal, point blank
     if(c.getRawButton(2)){
-      m_shoot.set(.6);
+      m_shoot.set(.3);
       uptake.set(.7);
     }
     //high, tarmac
     else if(c.getRawButton(3)){
-      m_shoot.set(1);
+      m_shoot.set(.55);
       uptake.set(.7);
     }
+
     else if(c.getRawButton(4)){
       m_shoot.set(.1);
       uptake.set(.7);
@@ -341,23 +342,23 @@ uptake.set(0);
  // m_left.set(stick.getY() + stick.getX());
   // m_right.set(stick.getY() - stick.getX());
     if(encodeL1.getVelocity() > 0){
-      candle.setLEDs(255, 255, 0);
+     // candle.setLEDs(255, 255, 0);
     }
     else if(encodeL1.getVelocity() < 0){
-      candle.setLEDs (127, 0, 255);
+      //candle.setLEDs (127, 0, 255);
     }
   }
 
 
 public void disabledInit() {
   super.disabledInit();
-  candle.setLEDs(255,0,0);
+  //candle.setLEDs(255,0,0);
 }
 @Override
 public void disabledExit() {
   
   super.disabledExit();
-  candle.setLEDs(0,255,0);
+ // candle.setLEDs(0,255,0);
 }
 
 }
