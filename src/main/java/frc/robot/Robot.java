@@ -324,6 +324,22 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
   //candle.setLEDs (100,0,230);
  }
 }
+if (c.getBackButtonPressed()){
+  //candle.setLEDs(0,0,255);
+  climb.set(1);
+  
+  }
+  else if(c.getBackButtonReleased()){
+    climb.set(0);
+  }
+  if (stick.getTriggerPressed()){
+    //candle.setLEDs(0,0,255);
+    climb.set(-1);
+    
+    }
+    else if(stick.getTriggerReleased()){
+      climb.set(0);
+    }
 
 
 if(c.getRawButtonPressed(7)){
