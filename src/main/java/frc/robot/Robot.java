@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 //import edu.wpi.first.wpilibj.PlAY;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 
@@ -46,6 +49,12 @@ public class Robot extends TimedRobot {
   
 double heading;
 
+
+//camera
+UsbCamera camera = new UsbCamera("Camera", "driver");
+//CameraServer cs = new CameraSever();
+
+
   //Motors
   private final CANSparkMax m_leftMotor1 = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax m_leftMotor2 = new CANSparkMax(2, MotorType.kBrushless);
@@ -57,14 +66,22 @@ double heading;
 
   private final CANSparkMax m_intake = new CANSparkMax(5, MotorType.kBrushed);
 
+  
   private final WPI_TalonFX shoot1= new WPI_TalonFX(6);
   private final WPI_TalonFX shoot2= new WPI_TalonFX(7);
   private final CANSparkMax kicker = new CANSparkMax(8, MotorType.kBrushed);
+ 
   MotorControllerGroup m_shoot = new MotorControllerGroup(shoot1, shoot2);
+
+  private final CANSparkMax uptake= new CANSparkMax(9, MotorType.kBrushed);
+
+  private final WPI_TalonFX climb1= new WPI_TalonFX(10);
+  private final WPI_TalonFX climb2= new WPI_TalonFX(11);
+  MotorControllerGroup climb = new MotorControllerGroup(climb1, climb2);
   //private final CANSparkMax m_shoot = new CANSparkMax(6, MotorType.kBrushless);
 
   
-  private final CANSparkMax uptake= new CANSparkMax(9, MotorType.kBrushed);
+ 
   //private final CANSparkMax uptake3 = new CANSparkMax(, MotorType.kBrushless);
   //MotorControllerGroup uptake = new MotorControllerGroup(uptake1, uptake2); 
 
@@ -100,30 +117,35 @@ double heading;
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
+  
+  //reset encoders
    encodeL1.setPosition(0);
    encodeL2.setPosition(0);
    encodeR1.setPosition(0);
    encodeR2.setPosition(0);
+
+   //invert motors and set climber to breaking
    m_right.setInverted(true);
    shoot2.setInverted(true);
-   //shoot1.setInverted(true);
+   climb1.setNeutralMode(NeutralMode.Brake);
+   climb2.setNeutralMode(NeutralMode.Brake);
    
-
-   // double kP = 1;
-
+    //Drive train and input
     m_myRobot = new DifferentialDrive(m_left, m_right);
     stick = new Joystick(0);
     stick2 = new Joystick(1);
     c = new XboxController(2);
-    
-    //c = new XboxController(0);
+   
+    //camera feed
+    CameraServer.addCamera(camera);
+    CameraServer.startAutomaticCapture();
+    CameraServer.getVideo();
+   
   
     //m_rightStick = new Joystick(1);
   }
   @Override
   public void autonomousInit(){
-    //Code for Auto period goes under this method
-    //heading = gyro.getAngle();
     m_timer.reset();
     m_timer.start();
     encodeL1.setPosition(0);
@@ -150,9 +172,6 @@ double heading;
     SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
     SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
    
-   /*while(encodeL1.getPosition() <= 120){
-      goForward();
-   }*/
    
     if(m_timer.get() <= 2){ 
       m_shoot.set(.55);
@@ -172,36 +191,6 @@ double heading;
         stop();
       }
     }
-    
-    // SmartDashboard.putNumber("Angle", gyro.getAngle());
-    // goBackward();
-    
-    
-    /*if(m_timer.get() < 2){
-        goForwad();
-    }
-    */
-    //turnLeft(45);
-   // turnLeft(45);
-    
-    /*else if(m_timer.get() < 11 && m_timer.get() >= 10){
-      turnRight();
-     }
-
-    else if(m_timer.get() < 21.0 && m_timer.get() >= 11){
-      
-     goForwad();
-  
-     
-    }
-    else if(m_timer.get() < 21.5 && m_timer.get() >= 21){
-      turnLeft();
-     }
-    */
-   
-  /* else{
-      m_myRobot.stopMotor();
-  }*/
 
 }
   public void goForward(){
@@ -232,8 +221,13 @@ double heading;
 
     //Makes robot drive
     //divide Z by 1.2
+   if(stick2.getRawButton(2)){
+    m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ());
+   }
+   else{
     m_myRobot.arcadeDrive(-accel.calculate(stick.getY()), stick2.getZ()/1.2);
-   //encoder.setPositionConversionFactor(0.165);
+   }
+    //encoder.setPositionConversionFactor(0.165);
 
    encodeL1.setPositionConversionFactor(Math.PI/2);
    encodeL2.setPositionConversionFactor(Math.PI/2);
@@ -268,6 +262,7 @@ double heading;
     }
     else if(c.getLeftBumperPressed()){
       m_intake.set(.9);
+      uptake.set(-.7);
      // uptake.set(.7);
       //candle.setLEDs(0, 0, 0);
     }
@@ -278,33 +273,36 @@ double heading;
 
  
  //Activates kicker to launch ball
-  if (stick2.getTrigger()){
+  if (stick2.getTriggerPressed()){
     //candle.setLEDs(0,0,255);
     kicker.set(1);
+    uptake.set(0.7);
     }
-    else{
+    else if (stick2.getTriggerReleased()){
       kicker.set(0);
+      uptake.set(0);
     }
     //Low goal, point blank
-    if(c.getRawButton(2)){
+    if(c.getRawButtonPressed(2)){
+     //.5
       m_shoot.set(.3);
-      uptake.set(.7);
+     // uptake.set(.7);
     }
     //high, tarmac
-    else if(c.getRawButton(3)){
+    else if(c.getRawButtonPressed(3)){
       m_shoot.set(.55);
-      uptake.set(.7);
+      //uptake.set(.7);
     }
 
-    else if(c.getRawButton(4)){
+    else if(c.getRawButtonPressed(4)){
       m_shoot.set(.1);
-      uptake.set(.7);
+      //uptake.set(.7);
     }
-    else{                                   
+    else if (c.getRawButtonReleased(2) || c.getRawButtonReleased(3) || c.getRawButtonReleased(4)){                                   
       m_shoot.set(0);                                                                                                                                   
       uptake.set(0);
     }
-   // kicker.set(.5);
+  
   
    //SmartDashboard.getNumber("rpm", shoot1.getMotorOutputPercent());
    /* if(shoot1.getSelectedSensorVelocity() > rpm * speed * .8){
@@ -312,9 +310,6 @@ double heading;
       uptake.set(.7);
     }*/
     
- 
-
-
  //pnuematics
  if(c.getRawButtonPressed(8)){
  if(state == DoubleSolenoid.Value.kReverse){
@@ -329,12 +324,12 @@ double heading;
   //candle.setLEDs (100,0,230);
  }
 }
-//c.getRightStickButton();
-c.getRawButtonPressed(7);
-if(c.getRawButton(7)){
+
+
+if(c.getRawButtonPressed(7)){
   uptake.set(1);
 }
-else{
+else if (c.getRawButtonReleased(7)){
 
 uptake.set(0);
 }
