@@ -129,6 +129,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
    shoot2.setInverted(true);
    climb1.setNeutralMode(NeutralMode.Brake);
    climb2.setNeutralMode(NeutralMode.Brake);
+   //climb2.setInverted(true);
    
     //Drive train and input
     m_myRobot = new DifferentialDrive(m_left, m_right);
@@ -147,7 +148,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
   @Override
   public void autonomousInit(){
     m_timer.reset();
-    m_timer.start();
+    
     encodeL1.setPosition(0);
     encodeL2.setPosition(0);
     encodeR1.setPosition(0);
@@ -172,9 +173,28 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
     SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
     SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
    
-   
-    if(m_timer.get() <= 2){ 
-      m_shoot.set(.55);
+    if(encodeL1.getPosition() >= -72/3){
+      goBackward();
+      m_shoot.set(1);
+      uptake.set(.7);
+  }
+  else{
+    if(m_timer.get() < 1){
+    m_timer.start();
+    }
+ else if(m_timer.get() > 1 && m_timer.get() < 2){
+    kicker.set(1);
+  }
+  else if(m_timer.get() > 2 && encodeL1.getPosition() >= -72){
+    m_shoot.set(0);
+    kicker.set(0);
+    uptake.set(0);
+    goBackward();
+  }
+}
+  
+   /*if(m_timer.get() <= 2){ 
+      m_shoot.set(.5);
       uptake.set(.7);
   }
     else if(m_timer.get() <= 4  && m_timer.get() > 2){
@@ -190,7 +210,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
       else{
         stop();
       }
-    }
+    }*/
 
 }
   public void goForward(){
@@ -275,6 +295,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
  //Activates kicker to launch ball
   if (stick2.getTriggerPressed()){
     //candle.setLEDs(0,0,255);
+    //was 1
     kicker.set(1);
     uptake.set(0.7);
     }
@@ -285,12 +306,12 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
     //Low goal, point blank
     if(c.getRawButtonPressed(2)){
      //.5
-      m_shoot.set(.3);
+      m_shoot.set(.5);
      // uptake.set(.7);
     }
     //high, tarmac
     else if(c.getRawButtonPressed(3)){
-      m_shoot.set(.55);
+      m_shoot.set(1);
       //uptake.set(.7);
     }
 
@@ -324,17 +345,17 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
   //candle.setLEDs (100,0,230);
  }
 }
-if (c.getBackButtonPressed()){
+  if (c.getRawButtonPressed(9)){
   //candle.setLEDs(0,0,255);
-  climb.set(1);
+    climb.set(1);
   
   }
-  else if(c.getBackButtonReleased()){
+  else if(c.getRawButtonReleased(9)){
     climb.set(0);
   }
   if (stick.getTriggerPressed()){
     //candle.setLEDs(0,0,255);
-    climb.set(-1);
+    climb.set(-.5);
     
     }
     else if(stick.getTriggerReleased()){
@@ -343,7 +364,7 @@ if (c.getBackButtonPressed()){
 
 
 if(c.getRawButtonPressed(7)){
-  uptake.set(1);
+  uptake.set(.5);
 }
 else if (c.getRawButtonReleased(7)){
 
