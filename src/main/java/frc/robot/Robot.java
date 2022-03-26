@@ -286,7 +286,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
    // candle.setLEDs(255, 0, 0);
 
     //Makes robot drive
-    //divide Z by 1.2
+    //Allows to the driver to turn off the accleration filter, filter was needed as robot tipped since it was top heavy
    if(stick2.getRawButton(2)){
     m_myRobot.arcadeDrive(-stick.getY(), stick2.getZ());
    }
