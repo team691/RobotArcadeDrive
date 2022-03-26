@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.led.*;
@@ -97,6 +98,11 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
   private final RelativeEncoder encodeR1 = m_rightMotor1.getEncoder();
   private final RelativeEncoder encodeR2 = m_rightMotor2.getEncoder();
 
+  private int autoMode = 0;
+ 
+  SendableChooser auto = new SendableChooser();
+	//auto.addDefault(autoNone, new AutoNone());
+	//auto.addObject();
   //LED controls
   /*private final CANdle candle = new CANdle (0);
   private final RainbowAnimation r = new RainbowAnimation(1,1,140);
@@ -144,6 +150,21 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
    
   
     //m_rightStick = new Joystick(1);
+
+  }
+  @Override
+  public void robotPeriodic() {
+      // TODO Auto-generated method stub
+      super.robotPeriodic();
+      if(stick.getRawButton(7)){
+        autoMode = 0;
+        System.out.println("Low goal auto selected");
+      }
+      if(stick.getRawButton(8)){
+        autoMode = 1;
+        System.out.println("High goal auto selected");
+      }
+      SmartDashboard.putNumber("Auto", autoMode);
   }
   @Override
   public void autonomousInit(){
@@ -153,7 +174,9 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
     encodeL2.setPosition(0);
     encodeR1.setPosition(0);
     encodeR2.setPosition(0);
-
+     
+    //autoMode = SmartDashboard.getNumber("Auto Selector", 0);
+    //System.out.println(SmartDashboard.getNumber("Auto Selector", 1));
     //gyro.reset();
     //heading = gyro.getAngle();
   }
@@ -172,7 +195,27 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
      SmartDashboard.putNumber("EncoderL2 inches", encodeL2.getPosition());
     SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
     SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
-   
+   if(autoMode == 0){
+    if(m_timer.get() <= 2){ 
+      m_shoot.set(.5);
+      uptake.set(.7);
+  }
+    else if(m_timer.get() <= 4  && m_timer.get() > 2){
+        kicker.set(1);
+      }
+    else if (m_timer.get() > 4){
+      kicker.set(0);
+      m_shoot.set(0);
+      uptake.set(0);
+      if(encodeL1.getPosition() >= -72){
+        goBackward();
+    }
+      else{
+        stop();
+      }
+    }
+   }
+    if(autoMode == 1){
     if(encodeL1.getPosition() >= -72/3){
       goBackward();
       m_shoot.set(1);
@@ -192,7 +235,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
     goBackward();
   }
 }
-  
+}
    /*if(m_timer.get() <= 2){ 
       m_shoot.set(.5);
       uptake.set(.7);
