@@ -156,6 +156,8 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
   public void robotPeriodic() {
       // TODO Auto-generated method stub
       super.robotPeriodic();
+    
+      //selects auto mode
       if(stick.getRawButton(7)){
         autoMode = 0;
         System.out.println("Low goal auto selected");
@@ -196,6 +198,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
     SmartDashboard.putNumber("EncoderR1 inches", encodeR1.getPosition());
     SmartDashboard.putNumber("EncoderR2 inches", encodeR2.getPosition());
    if(autoMode == 0){
+     m_timer.start();
     if(m_timer.get() <= 2){ 
       m_shoot.set(.5);
       uptake.set(.7);
@@ -210,7 +213,7 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
       if(encodeL1.getPosition() >= -72){
         goBackward();
     }
-      else{
+              else{
         stop();
       }
     }
