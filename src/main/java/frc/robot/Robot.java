@@ -26,6 +26,9 @@ import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+//import com.ctre.phoenix.led.*;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 
 
 
@@ -104,8 +107,17 @@ UsbCamera camera = new UsbCamera("Camera", "driver");
 	//auto.addDefault(autoNone, new AutoNone());
 	//auto.addObject();
   //LED controls
-  /*private final CANdle candle = new CANdle (0);
-  private final RainbowAnimation r = new RainbowAnimation(1,1,140);
+  private final CANdle candle = new CANdle (0);
+  CANdleConfiguration configAll = new CANdleConfiguration();
+    /*configAll.statusLedOffWhenActive = true;
+    configAll.disableWhenLOS = false;
+    configAll.setStripType(LEDStripType.GRB);
+    configAll.stripType = LEDStripType.GRB;
+    configAll.brightnessScalar = 1; // 1 is highest safe value
+    configAll.vBatOutputMode = VBatOutputMode.Modulated;
+    candle.configAllSettings(configAll, 100);*/
+
+  /*private final RainbowAnimation r = new RainbowAnimation(1,1,140);
   private final FireAnimation f = new FireAnimation(1,1,8,.2,.4);
   private final RgbFadeAnimation fa = new RgbFadeAnimation (1,.7,8);
   private final StrobeAnimation s = new StrobeAnimation (100,200,8, 255, 1, 8);
@@ -430,13 +442,13 @@ uptake.set(0);
 
 public void disabledInit() {
   super.disabledInit();
-  //candle.setLEDs(255,0,0);
+  candle.setLEDs(255,0,0);
 }
 @Override
 public void disabledExit() {
   
   super.disabledExit();
- // candle.setLEDs(0,255,0);
+  candle.setLEDs(0,255,0, 0, 0, 1024);
 }
 
 }
